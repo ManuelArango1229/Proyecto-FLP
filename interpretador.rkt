@@ -287,10 +287,32 @@ fundamentals of programming lenguages course project (FLP)|#
       (empty-list-exp () '())
       (array-exp (args) (list->vector (map (lambda (x)(eval-exp x env))args)))
       (prim-list-exp (prim arg) (eval-prim-exp prim (eval-exp arg env)))
+      (prim-array-exp (prim args) (eval-prim-array prim (map(lambda (x)(eval-exp x env)) args)))
       (else 1)
     )
   )
 )
+
+(define slice-vector
+  (lambda (lst start end)
+    (list->vector
+   (let loop ((i start) (result '()))
+     (if (< i end)
+         (loop (+ i 1) (cons (vector-ref lst i) result))
+         (reverse result)))))
+    )
+  
+(define eval-prim-array
+  (lambda (prim arg)
+    (cases primitivaArray prim
+    (length-primArr () (vector-length (car arg)))
+    (index-primArr () (vector-ref (car arg) (car (cdr arg))))
+    (slice-primArr () (slice-vector (car arg) (car (cdr arg)) (car (cdr (cdr arg)))))
+    (setlist-primArr () (vector->list (car arg)))
+    )
+    )
+  )
+  
 (define eval-prim-exp
   (lambda (prim arg)
     (cases primitivaListas prim
@@ -859,6 +881,7 @@ fundamentals of programming lenguages course project (FLP)|#
       (procval? x)
       (string? x)
       (list? x)
+      (vector? x)
     )
   )
 )
