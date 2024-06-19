@@ -308,7 +308,7 @@ fundamentals of programming lenguages course project (FLP)|#
     (length-primArr () (vector-length (car arg)))
     (index-primArr () (vector-ref (car arg) (car (cdr arg))))
     (slice-primArr () (slice-vector (car arg) (car (cdr arg)) (+ 1(car (cdr (cdr arg))))))
-    (setlist-primArr () (vector->list (car arg)))
+    (setlist-primArr () (vector-set! (car arg) (cadr arg) (caddr arg)))
     )
     )
   )
@@ -410,7 +410,7 @@ fundamentals of programming lenguages course project (FLP)|#
   (cond ((null? slst) "")
         ((null? (cdr slst)) (symbol->string (car slst)))
         (else (string-append (symbol->string (car slst))
-                             " " (slist->string (cdr slst)))))))
+                             "" (slist->string (cdr slst)))))))
 (define eval-switch
   (lambda (exp cases values default)
     (letrec
@@ -635,35 +635,6 @@ fundamentals of programming lenguages course project (FLP)|#
 
 
 
-
-(define (is-hexadecimal? ch)
-  (let
-      (
-       (pref (substring ch 0 3))
-       )
-    (if (or (equal? (substring pref 0 2) "hx") (equal? pref "-hx")) #t #f)
-      )
-  )
-
-(define (is-binario? ch)
-  (let
-      (
-       (pref (substring ch 0 2))
-       )
-    (if (or (equal? (substring pref 0 1) "b") (equal? pref "-b")) #t #f)
-      )
-  )
-
-(define (is-octal? ch)
-  (let
-      (
-       (pref (substring ch 0 3))
-       )
-    (if (or (equal? (substring pref 0 2) "0x") (equal? pref "-0x")) #t #f)
-      )
-  
-  )
-
 (define eval-prim
   (lambda (arg1 prim arg2 e)
     (let
@@ -755,9 +726,32 @@ fundamentals of programming lenguages course project (FLP)|#
                    ))
            )
         (cond
-          [(and (equal? Earg 'octal) (equal? Earg2 'octal)) (number->string (eval-prim-decimal arg3 prim arg4) 8)]
-          [(and (equal? Earg 'hex)(equal? Earg2 'hex)) (number->string (eval-prim-decimal arg3 prim arg4) 16)]
-          [(and (equal? Earg 'bin) (equal? Earg2 'bin)) (number->string (eval-prim-decimal arg3 prim arg4) 2)]
+          [(and (equal? Earg 'octal) (equal? Earg2 'octal))
+           (let
+               (
+                (result (number->string (eval-prim-decimal arg3 prim arg4) 8))
+                )
+             (if (not (equal? (substring result 0 1)) "-") (string-append "0x" result)
+             (string-append "-0x" (substring result 1)))
+               )
+           ]
+          [(and (equal? Earg 'hex)(equal? Earg2 'hex))
+           (let
+               (
+                (result (number->string (eval-prim-decimal arg3 prim arg4) 16))
+                )
+             (if (not (equal? (substring result 0 1) "-")) (string-append "hx" result)
+             (string-append "-hx" (substring result 1)))
+               )]
+          [(and (equal? Earg 'bin) (equal? Earg2 'bin))
+           (let
+               (
+                (result (number->string (eval-prim-decimal arg3 prim arg4) 2))
+                )
+             (if (not (equal? (substring result 0 1) "-")) (string-append "b" result)
+             (string-append "-b" (substring result 1)))
+               )
+           ]
           [else (eval-prim-decimal arg3 prim arg4)]
           )
       
