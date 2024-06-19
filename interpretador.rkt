@@ -307,7 +307,7 @@ fundamentals of programming lenguages course project (FLP)|#
     (cases primitivaArray prim
     (length-primArr () (vector-length (car arg)))
     (index-primArr () (vector-ref (car arg) (car (cdr arg))))
-    (slice-primArr () (slice-vector (car arg) (car (cdr arg)) (car (cdr (cdr arg)))))
+    (slice-primArr () (slice-vector (car arg) (car (cdr arg)) (+ 1(car (cdr (cdr arg))))))
     (setlist-primArr () (vector->list (car arg)))
     )
     )
