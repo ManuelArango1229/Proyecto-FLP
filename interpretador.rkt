@@ -633,13 +633,73 @@ fundamentals of programming lenguages course project (FLP)|#
     )
   )
 
+(define eval-prim
+  (lambda (arg1 prim arg2)
+    (if
+      (and (string? arg1) (string? arg2))
+      (let
+          (
+           (tipo1 (substring arg1 0 2))
+           (tipo2 (substring arg2 0 2))
+           )
+         (cond
+        [(and (or (equal? tipo1 "-h") (equal? tipo1 "hx")) (or (equal? tipo2 "-h") (equal? tipo2 "hx")))
+         (cond
+          [(and (not (equal? (substring tipo1 0 1) "-")) (not (equal? (substring tipo2 0 1) "-")))
+           (string-append "hx"
+           (number->string (eval-prim-aux (string->number (substring arg1 2) 16) prim (string->number (substring arg2 2) 16)) 16)
+           )
+           ]
+          [(and (equal? (substring tipo1 0 1) "-") (not (equal? (substring tipo2 0 1) "-")))
+           (let
+               (
+           (result (number->string (eval-prim-aux (- (string->number (substring arg1 3) 16)) prim (string->number (substring arg2 2) 16)) 16))
+           )
+             (if (equal? (substring result 0 1) "-")
+                 (string-append "-hx" (substring result 1))
+                 (string-append "hx" result)
+                 )
+             )
+           ]
+          [(and (not (equal? (substring tipo1 0 1) "-")) (equal? (substring tipo2 0 1) "-"))
+           (let
+               (
+           (result (number->string (eval-prim-aux (string->number (substring arg1 2) 16) prim (- (string->number (substring arg2 3) 16))) 16))
+           )
+             (if (equal? (substring result 0 1) "-")
+                 (string-append "-hx" (substring result 1))
+                 (string-append "hx" result)
+                 )
+             )
+           ]
+          [(and (equal? (substring tipo1 0 1) "-") (equal? (substring tipo2 0 1) "-"))
+           (let
+               (
+           (result (number->string (eval-prim-aux (- (string->number (substring arg1 3) 16)) prim (- (string->number (substring arg2 3) 16))) 16))
+           )
+             (if (equal? (substring result 0 1) "-")
+                 (string-append "-hx" (substring result 1))
+                 (string-append "hx" result)
+                 )
+             )
+           ]
+          )
+         ]
+        )
+      )
+          
+      
+      (eval-prim-aux arg1 prim arg2)
+      )
+    )
+  )
 
 
 
 
 ;;Function to evaluate the primitive
 
-(define eval-prim
+(define eval-prim-aux
   (lambda (arg1 prim arg2)
     (cases primitiva prim
       (sum-prim () (+ arg1 arg2))
