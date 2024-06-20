@@ -685,6 +685,90 @@ fundamentals of programming lenguages course project (FLP)|#
            ]
           )
          ]
+        [(and (or (equal? tipo1 "-b") (equal? (substring tipo1 0 1) "b")) (or (equal? tipo2 "-b") (equal? (substring tipo2 0 1) "b")))
+         (cond
+          [(and (not (equal? (substring tipo1 0 1) "-")) (not (equal? (substring tipo2 0 1) "-")))
+           (string-append "b"
+           (number->string (eval-prim-aux (string->number (substring arg1 1) 2) prim (string->number (substring arg2 1) 2)) 2)
+           )
+           ]
+          [(and (equal? (substring tipo1 0 1) "-") (not (equal? (substring tipo2 0 1) "-")))
+           (let
+               (
+           (result (number->string (eval-prim-aux (- (string->number (substring arg1 2) 2)) prim (string->number (substring arg2 1) 2)) 2))
+           )
+             (if (equal? (substring result 0 1) "-")
+                 (string-append "-b" (substring result 1))
+                 (string-append "b" result)
+                 )
+             )
+           ]
+          [(and (not (equal? (substring tipo1 0 1) "-")) (equal? (substring tipo2 0 1) "-"))
+           (let
+               (
+           (result (number->string (eval-prim-aux (string->number (substring arg1 1) 2) prim (- (string->number (substring arg2 2) 2))) 2))
+           )
+             (if (equal? (substring result 0 1) "-")
+                 (string-append "-b" (substring result 1))
+                 (string-append "b" result)
+                 )
+             )
+           ]
+          [(and (equal? (substring tipo1 0 1) "-") (equal? (substring tipo2 0 1) "-"))
+           (let
+               (
+           (result (number->string (eval-prim-aux (- (string->number (substring arg1 2) 2)) prim (- (string->number (substring arg2 2) 2))) 2))
+           )
+             (if (equal? (substring result 0 1) "-")
+                 (string-append "-b" (substring result 1))
+                 (string-append "b" result)
+                 )
+             )
+           ]
+          )
+         ]
+        [(and (or (equal? tipo1 "-0") (equal? tipo1 "0x")) (or (equal? tipo2 "-0") (equal? tipo2 "0x")))
+         (cond
+          [(and (not (equal? (substring tipo1 0 1) "-")) (not (equal? (substring tipo2 0 1) "-")))
+           (string-append "0x"
+           (number->string (eval-prim-aux (string->number (substring arg1 2) 8) prim (string->number (substring arg2 2) 8)) 8)
+           )
+           ]
+          [(and (equal? (substring tipo1 0 1) "-") (not (equal? (substring tipo2 0 1) "-")))
+           (let
+               (
+           (result (number->string (eval-prim-aux (- (string->number (substring arg1 3) 8)) prim (string->number (substring arg2 2) 8)) 8))
+           )
+             (if (equal? (substring result 0 1) "-")
+                 (string-append "-0x" (substring result 1))
+                 (string-append "0x" result)
+                 )
+             )
+           ]
+          [(and (not (equal? (substring tipo1 0 1) "-")) (equal? (substring tipo2 0 1) "-"))
+           (let
+               (
+           (result (number->string (eval-prim-aux (string->number (substring arg1 2) 8) prim (- (string->number (substring arg2 3) 8))) 8))
+           )
+             (if (equal? (substring result 0 1) "-")
+                 (string-append "-0x" (substring result 1))
+                 (string-append "0x" result)
+                 )
+             )
+           ]
+          [(and (equal? (substring tipo1 0 1) "-") (equal? (substring tipo2 0 1) "-"))
+           (let
+               (
+           (result (number->string (eval-prim-aux (- (string->number (substring arg1 3) 8)) prim (- (string->number (substring arg2 3) 8))) 8))
+           )
+             (if (equal? (substring result 0 1) "-")
+                 (string-append "-0x" (substring result 1))
+                 (string-append "0x" result)
+                 )
+             )
+           ]
+          )
+         ]
         )
       )
           
