@@ -166,7 +166,7 @@ fundamentals of programming lenguages course project (FLP)|#
             (Eexp1 (eval-exp exp1 env))
             (Eexp2 (eval-exp exp2 env))
           )
-          (eval-prim exp1 prim exp2 env)
+          (eval-prim Eexp1 prim Eexp2)
         )
       )
       ;;Booolean
@@ -462,16 +462,16 @@ fundamentals of programming lenguages course project (FLP)|#
          )
     (letrec
         (
-         (aux (lambda (e id from until by body)
+         (aux (lambda (env id from until by body)
               (cond
                 [(> from (- until by)) '()]
                 [else
-                 (cons (eval-exp body e) (aux (extend-env-let (list id) (list (direct-target(+ from by))) e) id (+ from by) until by body))
+                 (cons (eval-exp body env) (aux (extend-env-let (list id) (list (direct-target(+ from by))) env) id (+ from by) until by body))
                  ]
                 )
               ))
          )
-         (aux-for (aux e id Efrom Euntil Eby body))
+         (aux e id Efrom Euntil Eby body)
       )
     )
     )
@@ -635,135 +635,11 @@ fundamentals of programming lenguages course project (FLP)|#
 
 
 
-(define eval-prim
-  (lambda (arg1 prim arg2 e)
-    (let
-        (
-         (arg3
-          (cases expresion arg1
-            (num-exp (x)
-          (cases numero-exp x
-      (decimal-num (num) num)
-      (octal-num (num) (let
-                   (
-                    (pref1 (substring num 0 1))
-                    )
-                 (if (equal? "0" pref1) (string->number (substring num 2) 8) (-(string->number (substring num 3) 8)))))
-      (bin-num (num) (let
-                   (
-                    (pref1 (substring num 0 1))
-                    )
-                 (if (equal? "b" pref1) (string->number (substring num 1) 2) (-(string->number (substring num 2) 2)))))
-      (hex-num (num)
-               (let
-                   (
-                    (pref1 (substring num 0 1))
-                    )
-                 (if (equal? "h" pref1) (string->number (substring num 2) 16) (-(string->number (substring num 3) 16))))
-                 )
-               
-               
-      (float-num (num) num)
-      ))
-            (else 1)
-            )
-          
-         )
-          (arg4
-          (cases expresion arg2
-            (num-exp (x)
-          (cases numero-exp x
-      (decimal-num (num) num)
-      (octal-num (num) (let
-                   (
-                    (pref1 (substring num 0 1))
-                    )
-                 (if (equal? "0" pref1) (string->number (substring num 2) 8) (-(string->number (substring num 3) 8)))))
-      (bin-num (num) (let
-                   (
-                    (pref1 (substring num 0 1))
-                    )
-                 (if (equal? "b" pref1) (string->number (substring num 1) 2) (-(string->number (substring num 2) 2)))))
-      (hex-num (num)
-               (let
-                   (
-                    (pref1 (substring num 0 1))
-                    )
-                 (if (equal? "h" pref1) (string->number (substring num 2) 16) (-(string->number (substring num 3) 16))))
-                 )
-               
-               
-      (float-num (num) num)
-      ))
-            (else 1)
-            )
-          
-         )
-         )
-      (let
-          (
-           (Earg (cases expresion arg1
-                   (num-exp (num)
-                           (cases numero-exp num
-                             (octal-num (num ) 'octal)
-                             (hex-num (num) 'hex)
-                             (bin-num (num) 'bin)
-                             (else "")
-                             )
-                            )
-                   (else 1)
-                   ))
-           (Earg2 (cases expresion arg2
-                   (num-exp (num)
-                            (cases numero-exp num
-                             (octal-num (num ) 'octal)
-                             (hex-num (num) 'hex)
-                             (bin-num (num) 'bin)
-                             (else "")
-                             )
-                            )
-                    (else 1)
-                   ))
-           )
-        (cond
-          [(and (equal? Earg 'octal) (equal? Earg2 'octal))
-           (let
-               (
-                (result (number->string (eval-prim-decimal arg3 prim arg4) 8))
-                )
-             (if (not (equal? (substring result 0 1)) "-") (string-append "0x" result)
-             (string-append "-0x" (substring result 1)))
-               )
-           ]
-          [(and (equal? Earg 'hex)(equal? Earg2 'hex))
-           (let
-               (
-                (result (number->string (eval-prim-decimal arg3 prim arg4) 16))
-                )
-             (if (not (equal? (substring result 0 1) "-")) (string-append "hx" result)
-             (string-append "-hx" (substring result 1)))
-               )]
-          [(and (equal? Earg 'bin) (equal? Earg2 'bin))
-           (let
-               (
-                (result (number->string (eval-prim-decimal arg3 prim arg4) 2))
-                )
-             (if (not (equal? (substring result 0 1) "-")) (string-append "b" result)
-             (string-append "-b" (substring result 1)))
-               )
-           ]
-          [else (eval-prim-decimal arg3 prim arg4)]
-          )
-      
-        )
-      )
-         
-    )
-  )
+
 
 ;;Function to evaluate the primitive
 
-(define eval-prim-decimal
+(define eval-prim
   (lambda (arg1 prim arg2)
     (cases primitiva prim
       (sum-prim () (+ arg1 arg2))
